@@ -101,8 +101,10 @@ define supervisord::program(
 
   # convert environment data into a csv
   if $env_var {
-    $env_hash = hiera_hash($env_var)
-    validate_hash($env_hash)
+    $env_hash = lookup($env_var, {
+      value_type => Hash,
+      merge      => 'hash',
+    })
     $env_string = hash2csv($env_hash)
   }
   elsif $_program_environment {

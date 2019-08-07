@@ -3,28 +3,23 @@
 # This define executes command with the supervisorctl tool
 #
 define supervisord::supervisorctl(
-  $command,
-  $process       = undef,
-  $refreshonly   = false,
-  $unless        = undef
+  String $command,
+  String $process          = '',
+  Boolean $refreshonly     = false,
+  Optional[String] $unless = undef
 ) {
-
-  validate_string($command)
-  validate_string($process)
 
   $supervisorctl = $::supervisord::executable_ctl
 
   if $process {
     $cmd = join([$supervisorctl, $command, $process], ' ')
-  }
-  else {
+  } else {
     $cmd = join([$supervisorctl, $command], ' ')
   }
 
   if $unless {
     $unless_cmd = join([$supervisorctl, 'status', $process, '|', 'awk', '{\'print $2\'}', '|', 'grep', '-i', $unless], ' ')
-  }
-  else {
+  } else {
     $unless_cmd = undef
   }
 

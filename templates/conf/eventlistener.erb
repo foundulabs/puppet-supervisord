@@ -19,7 +19,7 @@ events=<%= @events_string %>
 <% if @buffer_size -%>
 buffer_size=<%= @buffer_size %>
 <% end -%>
-<% if @result_handler -%>
+<% if @result_handler != '' -%>
 result_handler=<%= @result_handler %>
 <% end -%>
 <% if @priority -%>
@@ -37,7 +37,7 @@ startsecs=<%= @startsecs %>
 <% if @startretries -%>
 startretries=<%= @startretries %>
 <% end -%>
-<% if @exitcodes -%>
+<% if @exitcodes != '' -%>
 exitcodes=<%= @exitcodes %>
 <% end -%>
 <% if @stopsignal -%>
@@ -52,13 +52,13 @@ stopasgroup=<%= @stopasgroup %>
 <% if @killasgroup != nil -%>
 killasgroup=<%= @killasgroup %>
 <% end -%>
-<% if @user -%>
+<% if @user != '' -%>
 user=<%= @user %>
 <% end -%>
 <% if @redirect_stderr != nil -%>
 redirect_stderr=<%= @redirect_stderr %>
 <% end -%>
-<% if @stdout_logfile_maxbytes -%>
+<% if @stdout_logfile_maxbytes != '' -%>
 stdout_logfile_maxbytes=<%= @stdout_logfile_maxbytes %>
 <% end -%>
 <% if @stdout_logfile_backups -%>
@@ -67,7 +67,7 @@ stdout_logfile_backups=<%= @stdout_logfile_backups %>
 <% if @stdout_events_enabled != nil -%>
 stdout_events_enabled=<%= @stdout_events_enabled %>
 <% end -%>
-<% if @stderr_logfile_maxbytes -%>
+<% if @stderr_logfile_maxbytes != '' -%>
 stderr_logfile_maxbytes=<%= @stderr_logfile_maxbytes %>
 <% end -%>
 <% if @stderr_logfile_backups -%>

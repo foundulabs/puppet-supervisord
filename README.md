@@ -78,8 +78,8 @@ class { 'supervisord':
   unix_socket_owner => 'nobody',
   unix_socket_group => 'nobody',
   unix_auth         => false,
-  unix_username     => undef,
-  unix_password     => undef,
+  unix_username     => '',
+  unix_password     => '',
 }
 ```
 
@@ -104,10 +104,10 @@ class { 'supervisord':
   unix_socket          => false,
   inet_server          => true,
   inet_server_hostname => '127.0.0.1',
-  inet_server_port     => '9001',
+  inet_server_port     => 9001,
   inet_auth            => false,
-  inet_username        => undef,
-  inet_password        => undef,
+  inet_username        => '',
+  inet_password        => '',
 }
 ```
 

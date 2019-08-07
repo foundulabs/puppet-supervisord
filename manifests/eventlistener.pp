@@ -6,79 +6,58 @@
 # http://supervisord.org/configuration.html#eventlistener-x-section-settings
 #
 define supervisord::eventlistener(
-  $command,
-  $ensure                  = present,
-  $ensure_process          = 'running',
-  $cfgreload               = undef,
-  $buffer_size             = 10,
-  $events                  = undef,
-  $result_handler          = undef,
-  $env_var                 = undef,
-  $process_name            = undef,
-  $numprocs                = undef,
-  $numprocs_start          = undef,
-  $priority                = undef,
-  $autostart               = undef,
-  $autorestart             = undef,
-  $startsecs               = undef,
-  $startretries            = undef,
-  $exitcodes               = undef,
-  $stopsignal              = undef,
-  $stopwaitsecs            = undef,
-  $stopasgroup             = undef,
-  $killasgroup             = undef,
-  $user                    = undef,
-  $redirect_stderr         = undef,
-  $stdout_logfile          = "eventlistener_${name}.log",
-  $stdout_logfile_maxbytes = undef,
-  $stdout_logfile_backups  = undef,
-  $stdout_events_enabled   = undef,
-  $stderr_logfile          = "eventlistener_${name}.error",
-  $stderr_logfile_maxbytes = undef,
-  $stderr_logfile_backups  = undef,
-  $stderr_events_enabled   = undef,
-  $environment             = undef,
-  $event_environment       = undef,
-  $directory               = undef,
-  $umask                   = undef,
-  $serverurl               = undef,
-  $config_file_mode        = '0644'
+  String $command,
+  $ensure                                                = present,
+  Enum['running',
+    'stopped',
+    'removed',
+    'unmanaged'] $ensure_process                         = 'running',
+  Boolean $cfgreload                                     = false,
+  Integer $buffer_size                                   = 10,
+  Array $events                                          = [],
+  String $result_handler                                 = '',
+  $env_var                                               = undef,
+  $process_name                                          = undef,
+  Integer $numprocs                                      = 1,
+  Optional[Integer] $numprocs_start                      = undef,
+  Optional[Variant[Integer, Pattern[/^\d+$/]]] $priority = undef,
+  Optional[Boolean] $autostart                           = undef,
+  Optional[Variant[
+    Boolean, Enum['true',
+      'false',
+      'unexpected']]] $autorestart                       = undef,
+  Optional[Integer] $startsecs                           = undef,
+  Optional[Integer] $startretries                        = undef,
+  String $exitcodes                                      = '',
+  Optional[Enum['TERM',
+    'HUP',
+    'INT',
+    'QUIT',
+    'KILL',
+    'USR1',
+    'USR2']] $stopsignal                                 = undef,
+  Optional[Integer] $stopwaitsecs                        = undef,
+  Optional[Boolean] $stopasgroup                         = undef,
+  Optional[Boolean] $killasgroup                         = undef,
+  String $user                                           = '',
+  Optional[Boolean] $redirect_stderr                     = undef,
+  String $stdout_logfile                                 = "eventlistener_${name}.log",
+  String $stdout_logfile_maxbytes                        = '',
+  Optional[Integer] $stdout_logfile_backups              = undef,
+  Optional[Boolean] $stdout_events_enabled               = undef,
+  String $stderr_logfile                                 = "eventlistener_${name}.error",
+  String $stderr_logfile_maxbytes                        = '',
+  Optional[Integer] $stderr_logfile_backups              = undef,
+  Optional[Boolean] $stderr_events_enabled               = undef,
+  Optional[Hash] $environment                            = undef,
+  Optional[Hash] $event_environment                      = undef,
+  Optional[Stdlib::Absolutepath] $directory              = undef,
+  Optional[Pattern[/^[0-7][0-7][0-7]$/]] $umask          = undef,
+  Optional[Stdlib::HTTPUrl] $serverur                    = undef,
+  Stdlib::Filemode $config_file_mode                     = '0644'
 ) {
 
   include supervisord
-
-  # parameter validation
-  validate_string($command)
-  validate_re($ensure_process, ['running', 'stopped', 'removed', 'unmanaged'])
-  if $cfgreload { validate_bool($cfgreload) }
-  if !is_integer($buffer_size) { validate_re($buffer_size, '^\d+')}
-  if $events { validate_array($events) }
-  if $result_handler { validate_string($result_handler) }
-  if $numprocs { if !is_integer($numprocs) { validate_re($numprocs, '^\d+')} }
-  if $numprocs_start { if !is_integer($numprocs_start) { validate_re($numprocs_start, '^\d+')} }
-  if $priority { if !is_integer($priority) { validate_re($priority, '^\d+') } }
-  if $autostart { if !is_bool($autostart) { validate_re($autostart, ['true', 'false']) } }
-  if $autorestart { if !is_bool($autorestart) { validate_re($autorestart, ['true', 'false', 'unexpected']) } }
-  if $startsecs { if !is_integer($startsecs) { validate_re($startsecs, '^\d+')} }
-  if $startretries { if !is_integer($startretries) { validate_re($startretries, '^\d+')} }
-  if $exitcodes { validate_string($exitcodes)}
-  if $stopsignal { validate_re($stopsignal, ['TERM', 'HUP', 'INT', 'QUIT', 'KILL', 'USR1', 'USR2']) }
-  if $stopwaitsecs { if !is_integer($stopwaitsecs) { validate_re($stopwaitsecs, '^\d+')} }
-  if $stopasgroup { validate_bool($stopasgroup) }
-  if $killasgroup { validate_bool($killasgroup) }
-  if $user { validate_string($user) }
-  if $redirect_stderr { validate_bool($redirect_stderr) }
-  validate_string($stdout_logfile)
-  if $stdout_logfile_maxbytes { validate_string($stdout_logfile_maxbytes) }
-  if $stdout_logfile_backups { if !is_integer($stdout_logfile_backups) { validate_re($stdout_logfile_backups, '^\d+')} }
-  if $stdout_events_enabled { validate_bool($stdout_events_enabled) }
-  validate_string($stderr_logfile)
-  if $stderr_logfile_maxbytes { validate_string($stderr_logfile_maxbytes) }
-  if $stderr_logfile_backups { if !is_integer($stderr_logfile_backups) { validate_re($stderr_logfile_backups, '^\d+')} }
-  if $stderr_events_enabled { validate_bool($stderr_events_enabled) }
-  if $directory { validate_absolute_path($directory) }
-  if $umask { validate_re($umask, '^[0-7][0-7][0-7]$') }
-  validate_re($config_file_mode, '^0[0-7][0-7][0-7]$')
 
   # create the correct log variables
   $stdout_logfile_path = $stdout_logfile ? {
@@ -102,12 +81,12 @@ define supervisord::eventlistener(
 
   # convert environment data into a csv
   if $env_var {
-    $env_hash = hiera_hash($env_var)
-    validate_hash($env_hash)
+    $env_hash = lookup($env_var, {
+      value_type => Hash,
+      merge      => 'hash',
+    })
     $env_string = hash2csv($env_hash)
-  }
-  elsif $_event_environment {
-    validate_hash($_event_environment)
+  } elsif $_event_environment {
     $env_string = hash2csv($_event_environment)
   }
 
@@ -117,7 +96,7 @@ define supervisord::eventlistener(
     default => $cfgreload
   }
 
-  if $events {
+  if ! empty($events) {
     $events_string = array2csv($events)
   }
 
